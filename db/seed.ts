@@ -1,6 +1,6 @@
-import { getDb } from "../server/queries/connection";
-import { hashPassword } from "../server/auth/password";
-import { items, projects, subscriptions, tutors, users } from "./schema";
+import { getDb } from "../server/queries/connection.js";
+import { hashPassword } from "../server/auth/password.js";
+import { items, projects, subscriptions, tutors, users } from "./schema.js";
 
 // All demo accounts share this password so you can sign in right away.
 const DEMO_PASSWORD = "password123";

@@ -1,18 +1,18 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { createRouter, publicQuery, authedQuery } from "./middleware";
+import { createRouter, publicQuery, authedQuery } from "./middleware.js";
 import {
   hashPassword,
   verifyPassword,
   signSessionToken,
   serializeSessionCookie,
   serializeLogoutCookie,
-} from "./auth";
+} from "./auth/index.js";
 import {
   createUser,
   findUserByEmail,
   touchLastSignIn,
-} from "./queries/users";
+} from "./queries/users.js";
 
 const credentials = {
   email: z.string().email().max(254),

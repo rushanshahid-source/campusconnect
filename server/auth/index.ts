@@ -1,9 +1,9 @@
 import * as cookie from "cookie";
-import { Session } from "../../contracts/constants";
-import { Errors } from "../../contracts/errors";
-import { getSessionCookieOptions } from "../lib/cookies";
-import { findUserById } from "../queries/users";
-import { verifySessionToken } from "./session";
+import { Session } from "../../contracts/constants.js";
+import { Errors } from "../../contracts/errors.js";
+import { getSessionCookieOptions } from "../lib/cookies.js";
+import { findUserById } from "../queries/users.js";
+import { verifySessionToken } from "./session.js";
 
 /**
  * Resolve the authenticated user from the request's session cookie.
@@ -53,5 +53,5 @@ export function serializeLogoutCookie(headers: Headers): string {
   });
 }
 
-export { signSessionToken, verifySessionToken } from "./session";
-export { hashPassword, verifyPassword } from "./password";
+export { signSessionToken, verifySessionToken } from "./session.js";
+export { hashPassword, verifyPassword } from "./password.js";
