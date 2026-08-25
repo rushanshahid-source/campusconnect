@@ -12,9 +12,13 @@
  * `vercel.json` rewrites every /api/* request here; static assets are served by
  * Vercel from dist/public, so the app never serves files itself.
  *
- * Hono exports a Web-standard `fetch` handler, which is exactly what Vercel's
- * Node runtime accepts as a default export.
+ * The default export must be a *callable*. A Hono instance is an object that
+ * merely *has* a `.fetch` method, so exporting it directly gives the runtime
+ * nothing to invoke and every request dies as FUNCTION_INVOCATION_FAILED before
+ * any of our code runs. `handle` from `hono/vercel` wraps it as
+ * `(req) => app.fetch(req)`, which is what the runtime expects.
  */
+import { handle } from "hono/vercel";
 import app from "../server/app";
 
-export default app;
+export default handle(app);
