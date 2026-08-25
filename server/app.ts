@@ -45,13 +45,43 @@ app.onError((err, c) => {
  * Unauthenticated diagnostic. Reports whether each required variable is present
  * — never its value — so a broken deploy can be identified with one request.
  */
-app.get("/api/health", (c) => {
+app.get("/api/health", async (c) => {
   const missing = missingEnv();
+
+  // ?db=1 additionally probes the database. Bounded by its own timer, because a
+  // connection that hangs rather than refuses would otherwise run out the
+  // platform's maxDuration and report nothing useful.
+  let db: unknown;
+  if (c.req.query("db") && missing.length === 0) {
+    const started = Date.now();
+    try {
+      const { getDb } = await import("./queries/connection.js");
+      const { sql } = await import("drizzle-orm");
+      await Promise.race([
+        getDb().execute(sql`select 1`),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("probe timed out after 8s")), 8000),
+        ),
+      ]);
+      db = { reachable: true, ms: Date.now() - started };
+    } catch (e) {
+      const err = e as { message?: string; code?: string };
+      // Message and code only — never the connection string.
+      db = {
+        reachable: false,
+        ms: Date.now() - started,
+        code: err.code ?? null,
+        message: err.message ?? String(e),
+      };
+    }
+  }
+
   return c.json(
     {
       ok: missing.length === 0,
       env: process.env.NODE_ENV ?? "unknown",
       missingEnv: missing,
+      ...(db === undefined ? {} : { db }),
     },
     missing.length === 0 ? 200 : 503,
   );
