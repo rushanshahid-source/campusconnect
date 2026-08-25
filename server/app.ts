@@ -65,13 +65,23 @@ app.get("/api/health", async (c) => {
       ]);
       db = { reachable: true, ms: Date.now() - started };
     } catch (e) {
-      const err = e as { message?: string; code?: string };
-      // Message and code only — never the connection string.
+      // Drizzle wraps driver errors ("Failed query: ..."), so walk the cause
+      // chain — the real Postgres code and message live at the bottom of it.
+      const chain: Array<{ code: string | null; message: string }> = [];
+      let cur: unknown = e;
+      while (cur && chain.length < 5) {
+        const x = cur as { message?: string; code?: string; cause?: unknown };
+        chain.push({ code: x.code ?? null, message: x.message ?? String(cur) });
+        cur = x.cause;
+      }
+      const root = chain[chain.length - 1];
       db = {
         reachable: false,
         ms: Date.now() - started,
-        code: err.code ?? null,
-        message: err.message ?? String(e),
+        // Code and message only — never the connection string.
+        code: root?.code ?? null,
+        message: root?.message ?? "unknown",
+        chain,
       };
     }
   }
