@@ -1,5 +1,5 @@
-import { getDb } from "../api/queries/connection";
-import { hashPassword } from "../api/auth/password";
+import { getDb } from "../server/queries/connection";
+import { hashPassword } from "../server/auth/password";
 import { items, projects, subscriptions, tutors, users } from "./schema";
 
 // All demo accounts share this password so you can sign in right away.

@@ -1,6 +1,6 @@
 import * as cookie from "cookie";
-import { Session } from "@contracts/constants";
-import { Errors } from "@contracts/errors";
+import { Session } from "../../contracts/constants";
+import { Errors } from "../../contracts/errors";
 import { getSessionCookieOptions } from "../lib/cookies";
 import { findUserById } from "../queries/users";
 import { verifySessionToken } from "./session";

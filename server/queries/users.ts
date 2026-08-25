@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
-import * as schema from "@db/schema";
-import type { InsertUser, User } from "@db/schema";
+import * as schema from "../../db/schema";
+import type { InsertUser, User } from "../../db/schema";
 import { getDb } from "./connection";
 import { env } from "../lib/env";
 

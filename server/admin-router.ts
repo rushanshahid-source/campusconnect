@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { desc, eq } from "drizzle-orm";
-import { auditLogs, deals, items, messages, projects, reports, subscriptions, tutors, users } from "@db/schema";
+import { auditLogs, deals, items, messages, projects, reports, subscriptions, tutors, users } from "../db/schema";
 import { adminQuery, createRouter, authedQuery, moderatorQuery } from "./middleware";
 import { getDb } from "./queries/connection";
 
