@@ -19,8 +19,22 @@ const credentials = {
   password: z.string().min(8).max(200),
 };
 
+/**
+ * Strip the stored password hash before a user row crosses the wire.
+ *
+ * login, register and me all returned the row straight from the database, so
+ * every successful sign-in shipped the account's scrypt hash to the browser
+ * (and to anything else watching the response). Nothing client-side needs it.
+ */
+function publicUser<T extends { passwordHash?: unknown }>(
+  user: T,
+): Omit<T, "passwordHash"> {
+  const { passwordHash: _hash, ...rest } = user;
+  return rest;
+}
+
 export const authRouter = createRouter({
-  me: authedQuery.query((opts) => opts.ctx.user),
+  me: authedQuery.query((opts) => publicUser(opts.ctx.user)),
 
   register: publicQuery
     .input(
@@ -57,7 +71,7 @@ export const authRouter = createRouter({
         serializeSessionCookie(ctx.req.headers, token),
       );
 
-      return user;
+      return publicUser(user);
     }),
 
   login: publicQuery
@@ -82,7 +96,7 @@ export const authRouter = createRouter({
         serializeSessionCookie(ctx.req.headers, token),
       );
 
-      return user;
+      return publicUser(user);
     }),
 
   logout: authedQuery.mutation(async ({ ctx }) => {
